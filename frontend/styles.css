@@ -1,0 +1,50 @@
+#map {
+  height: 500px;
+  width: 100%;
+}
+
+.locate-button {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.locate-button:hover {
+  background: #f0f0f0;
+}
+
+.legend-button {
+  background: #007cba;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 12px;
+  margin: 2px;
+}
+
+.legend-button:hover {
+  background: #005a87;
+}
+
+.legend-button.active {
+  background: #ff6b35;
+}
+
+#detectTerrainBtn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+#detectTerrainBtn:hover {
+  background: #218838;
+}

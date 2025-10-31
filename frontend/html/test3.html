@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>防災マップ</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body { margin: 0; font-family: sans-serif; }
+    #map { width: 100%; height: 500px; }
+    #infoCard {
+      padding: 10px;
+      border: 1px solid #ccc;
+      background: #f9f9f9;
+      margin: 10px;
+      border-radius: 5px;
+    }
+    #terrainToggle {
+      padding: 5px 10px;
+      margin: 10px;
+      border: none;
+      color: #fff;
+      background: #28a745;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 style="text-align: left; margin: 10px;">大阪特化防災アプリ</h1>
+  <h2 style="text-align: left; margin: 8px;">防災モード</h2>
+  <!-- 地図表示 -->
+  <div id="map"></div>
+
+  <!-- 任意地点ボタン -->
+  <button id="terrainToggle" type="button">📌 他の場所の災害リスクを判定</button>
+
+  <button id="showFavoritesBtn"type="button">⭐ お気に入り表示</button>
+
+  <button id="showFavoriteListBtn" type="button" style="display:none;">📋 お気に入りリスト表示</button>
+  <div id="favoriteListContainer" style="display:none;padding:10px; border:1px solid #ccc; background:#fff; margin:10px; border-radius:5px;">
+    <h3>お気に入りリスト</h3>
+    <div id="favoriteList"></div>
+  </div>
+
+
+  
+
+  <!-- 情報カード -->
+  <!-- 情報カード -->
+<div id="infoCard">
+  <div id="infoCardMessage">現在地情報を取得中...</div>
+  <div id="currentLocationInfo" style="display:none;">
+  </div>
+  <button id="favoriteBtn">★ お気に入り追加</button>
+</div>
+
+
+<div id="authBox" style="margin:10px;padding:10px;border:1px solid #ddd;">
+  <div><b>ログイン</b></div>
+  <input id="loginEmail" placeholder="email">
+  <input id="loginPass" type="password" placeholder="password">
+  <button id="btnLogin">ログイン</button>
+  <hr/>
+  <div><b>新規登録</b></div>
+  <input id="regEmail" placeholder="email">
+  <input id="regPass" type="password" placeholder="password">
+  <input id="regNickname" placeholder="nickname(任意)">
+  <button id="btnRegister">登録</button>
+  <button id="btnLogout">ログアウト</button>
+</div>
+
+
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- 2) 初回だけ deviceId を作る（お気に入り引き取りに必須） -->
+  <script>
+    (function(){
+      const k = "deviceId";
+      if(!localStorage.getItem(k)){
+        const id = (crypto.randomUUID ? crypto.randomUUID()
+                 : Date.now() + "-" + Math.random().toString(16).slice(2));
+        localStorage.setItem(k, id);
+      }
+    })();
+  </script>
+  
+  <script>window.__API_BASE="/api";</script>
+  <!-- <script type="module" src="../JS/main3.js"></script> -->
+  <script type="module" src="/JS/main3.js?v=20251030a"></script>
+  
+</body>
+</html>

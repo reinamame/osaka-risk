@@ -1,0 +1,22 @@
+# Python / FastAPI
+venv/
+__pycache__/
+*.py[cod]
+*.db
+*.sqlite*
+data/
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+.parcel-cache/
+
+# Env files (keep example only)
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.vscode/
+.DS_Store

@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite*
+*.db
+
+# Env / secrets
+.env
+.env.*
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
+# Node/Frontend（使ってたら）
+node_modules/
+dist/
