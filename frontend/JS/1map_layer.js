@@ -10,8 +10,8 @@ async function fetchJSONSafe(url, label){
     if (!res.ok) { if (window.__DEBUG) console.warn(label, "HTTP", res.status, url); return null; }
     // geojsonを application/octet-streamで返す環境もあるので content-type は警告だけ
     const ct = (res.headers.get("content-type") || "").toLowerCase();
-    if (!ct.includes("json")) { if (window.__DEBUG) console.warn(label, "non-JSON:", ct, url); }
-    return await res.json();
+    if (!(res.headers.get("content-type")||"").toLowerCase().includes("json")) { if (window.__DEBUG) console.warn(label, "non-JSON:", ct, url); }
+     if(!(res.headers.get("content-type")||"").toLowerCase().includes("json")){ console.warn("not JSON:", u, ct); return null;} return await res.json();
   } catch (e) {
     if (window.__DEBUG) console.warn(label, "fetch/json error:", e);
     return null;
@@ -37,7 +37,7 @@ console.log("map作成完了:", map)
 
 // GeoJSON 読み込み
 // ここを差し替え（相対→絶対 & 安全フェッチ）
-(async () => {
+;(async () => {
   const data = await fetchJSONSafe("/data/N03-19_27_190101.geojson", "osaka-geojson");
   if (!data) { console.log("大阪府GeoJSONなし→スキップ"); return; }
 

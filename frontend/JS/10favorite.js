@@ -3,7 +3,7 @@
 import { map, L } from "./1map_layer.js";
 import { showLocationInfo } from "./6infoUI.js";
 import { findNearestShelter } from "./11nearestShelter/11nearestShelter.js"; // 避難所モジュール
-import { getDetailedRiskByTerrain, assessDisasterRisk } from "./4risk.js";
+import { assessDisasterRisk } from "./4risk.js?v=20251107b";
 import { API_BASE, buildHeaders, getToken } from "./12auth.js";
 
 
@@ -136,7 +136,7 @@ async function loadFavorites() {
   
         // DB → 表示用に整形
         const baseSimple =
-          getDetailedRiskByTerrain(p.terrain_type) ||
+          
           await assessDisasterRisk(p.lat, p.lon, p.terrain_type);
         const simpleRisk = {
           risk: p.risk_description || baseSimple?.risk || "不明",
@@ -353,7 +353,7 @@ async function renderFavoriteList() {
 
     // 表示用リスク（DB値を優先し、無ければ地形ベース）
     const baseSimple =
-      getDetailedRiskByTerrain(p.terrain_type) ||
+      
       await assessDisasterRisk(p.lat, p.lon, p.terrain_type);
     const simpleRisk = {
       risk: p.risk_description || baseSimple?.risk || "不明",
