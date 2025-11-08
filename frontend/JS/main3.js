@@ -5,7 +5,7 @@ import { initializeLegend } from "./8legend/8legend.js";
 import { setupLocationFeatures } from "./3location.js";
 
 import { getTerrainFromAPI } from "./2terrain.js";
-import { assessDisasterRisk, fetchRiskFromAPI, loadRiskDatabase } from "./4risk.js?v=2";
+import { assessDisasterRisk, fetchRiskFromAPI, loadRiskDatabase } from "./4risk.js?v=20251107b";
 
 import { setupTerrainToggle } from "./9terrain_btn.js";
 
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   await updateLoginUI();       
 
-  await loadRiskDatabase("/data/geodata.csv?v=20251030a");
+// disabled: loadRiskDatabase();
 
 
 

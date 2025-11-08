@@ -1,7 +1,7 @@
 console.log("7current_UI.js loaded");
 import { map, L } from "./1map_layer.js";
 import { getTerrainFromAPI } from "./2terrain.js";
-import { getDetailedRiskByTerrain, assessDisasterRisk, loadRiskDatabase, fetchRiskFromAPI } from "./4risk.js?v=2";
+import { getDetailedRiskByTerrain, assessDisasterRisk, loadRiskDatabase, fetchRiskFromAPI } from "./4risk.js?v=20251107b";
 import { showLocationInfo } from "./6infoUI.js";
 import { showLocation } from "./3location.js";
 import { setFavoriteButton } from "./10favorite.js";

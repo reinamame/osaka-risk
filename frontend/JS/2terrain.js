@@ -1,119 +1,158 @@
 // =====  地形判別機能 =====
 
-
-// --- 静かなフェッチ（404/非JSONは黙って無視） ---
-window.__DEBUG ??= false; // 必要なとき DevTools から true に
-
-async function fetchGeoJSONSafe(url, label){
-  try{
-    const res = await fetch(url, { cache: "no-store" });
-    if (res.status === 404) { if (window.__DEBUG) console.debug(label, "404:", url); return null; }
-    if (!res.ok)           { if (window.__DEBUG) console.warn (label, res.status, url); return null; }
-    const ct = (res.headers.get("content-type") || "").toLowerCase();
-    if (!ct.includes("application/json")) { if (window.__DEBUG) console.warn(label, "non-JSON:", ct, url); return null; }
-    return await res.json();
-  }catch(e){
-    if (window.__DEBUG) console.error(label, "fetch error:", e);
-    return null;
-  }
-}
-
-
 // 座標から地形分類を取得するメイン関数
 export async function getTerrainFromAPI(lat, lng) {
   try {
-    if (window.__DEBUG) console.log(`地形判別開始: 座標 ${lat}, ${lng}`);
+    console.log(`地形判別開始: 座標 ${lat}, ${lng}`)
 
-    const zoom = 14;
-    const tileX = Math.floor(((lng + 180) / 360) * Math.pow(2, zoom));
+    // ズームレベル14で地形分類データを取得　タイル座標の計算
+    const zoom = 14
+    const tileX = Math.floor(((lng + 180) / 360) * Math.pow(2, zoom))
     const tileY = Math.floor(
       ((1 - Math.log(Math.tan((lat * Math.PI) / 180) + 1 / Math.cos((lat * Math.PI) / 180)) / Math.PI) / 2) *
-      Math.pow(2, zoom)
-    );
-    if (window.__DEBUG) console.log(`タイル座標: ${zoom}/${tileX}/${tileY}`);
+        Math.pow(2, zoom),
+    )
 
+    console.log(`タイル座標: ${zoom}/${tileX}/${tileY}`)
+
+    // データ取得対象URL
     const urls = [
-      { url: `https://cyberjapandata.gsi.go.jp/xyz/experimental_landformclassification1/${zoom}/${tileX}/${tileY}.geojson`, type: "natural"     },
-      { url: `https://cyberjapandata.gsi.go.jp/xyz/experimental_landformclassification2/${zoom}/${tileX}/${tileY}.geojson`, type: "artificial"  },
-    ];
+      {
+        url: `https://cyberjapandata.gsi.go.jp/xyz/experimental_landformclassification1/${zoom}/${tileX}/${tileY}.geojson`,
+        type: "natural",
+      },
+      {
+        url: `https://cyberjapandata.gsi.go.jp/xyz/experimental_landformclassification2/${zoom}/${tileX}/${tileY}.geojson`,
+        type: "artificial",
+      },
+    ]
 
-    let bestMatch = null;
-    let minDistance = Number.POSITIVE_INFINITY;
+    let bestMatch = null
+    let minDistance = Number.POSITIVE_INFINITY
 
     for (const { url, type } of urls) {
-      const data = await fetchGeoJSONSafe(url, type);
-      if (!data?.features?.length) continue;
+      try {
+        console.log(`データ取得中: ${url}`)
+        const response = await fetch(url)
 
-      for (const feature of data.features) {
-        if (window.__DEBUG) { console.debug(`フィーチャー (${type})`, feature.properties); }
-
-        if (!(feature.geometry && feature.geometry.coordinates)) continue;
-
-        let isInside = false;
-        let featureLat, featureLng;
-
-        if (feature.geometry.type === "Point") {
-          [featureLng, featureLat] = feature.geometry.coordinates;
-          const distance = Math.hypot(lat - featureLat, lng - featureLng);
-          if (distance < 0.001) isInside = true; // 約100m以内
-        } else if (feature.geometry.type === "Polygon") {
-          const ring = feature.geometry.coordinates[0];
-          isInside = isPointInPolygon([lng, lat], ring);
-          // 重心（ざっくり）
-          featureLng = ring.reduce((s, c) => s + c[0], 0) / ring.length;
-          featureLat = ring.reduce((s, c) => s + c[1], 0) / ring.length;
-        } else if (feature.geometry.type === "MultiPolygon") {
-          for (const polygon of feature.geometry.coordinates) {
-            if (isPointInPolygon([lng, lat], polygon[0])) { isInside = true; break; }
-          }
-          const first = feature.geometry.coordinates?.[0]?.[0];
-          if (first?.length) {
-            featureLng = first.reduce((s, c) => s + c[0], 0) / first.length;
-            featureLat = first.reduce((s, c) => s + c[1], 0) / first.length;
-          }
+        if (!response.ok) {
+          console.log(`データなし: ${url} (${response.status})`)
+          continue
         }
 
-        if (isInside || (featureLat && featureLng)) {
-          const distance = (featureLat && featureLng) ? Math.hypot(lat - featureLat, lng - featureLng) : 0;
-          if (isInside || distance < minDistance) {
-            minDistance = distance;
-            bestMatch = { feature, type };
-            if (window.__DEBUG) console.debug(`マッチ更新 (${type})`, feature.properties);
-          }
+        const data = await response.json()
+        console.log(`取得したデータ (${type}):`, data)
+
+        //  featuresが空ならスキップ
+        // if (!data.features || data.features.length === 0) continue
+
+
+        if (data.features && data.features.length > 0) {
+          data.features.forEach((feature) => {
+            console.log(`フィーチャー (${type}):`, feature)
+            console.log("プロパティ:", feature.properties)
+
+            if (feature.geometry && feature.geometry.coordinates) {
+              // ポイント内判定またはポリゴン内判定
+              let isInside = false
+              let featureLat, featureLng
+
+              if (feature.geometry.type === "Point") {
+                ;[featureLng, featureLat] = feature.geometry.coordinates
+                const distance = Math.sqrt(Math.pow(lat - featureLat, 2) + Math.pow(lng - featureLng, 2))
+                if (distance < 0.001) {
+                  // 約100m以内
+                  isInside = true
+                }
+              } else if (feature.geometry.type === "Polygon") {
+                // ポリゴン内判定（レイキャスティング法）
+                isInside = isPointInPolygon([lng, lat], feature.geometry.coordinates[0])
+
+                // 距離計算用の重心も計算
+                const coords = feature.geometry.coordinates[0]
+                featureLng = coords.reduce((sum, coord) => sum + coord[0], 0) / coords.length
+                featureLat = coords.reduce((sum, coord) => sum + coord[1], 0) / coords.length
+              
+                // 複数ポリゴンの場合(1つでも内部あればtrue）
+              } else if (feature.geometry.type === "MultiPolygon") {
+                // MultiPolygonの場合、各ポリゴンをチェック
+                for (const polygon of feature.geometry.coordinates) {
+                  if (isPointInPolygon([lng, lat], polygon[0])) {
+                    isInside = true
+                    break
+                  }
+                }
+
+                // 重心計算（最初のポリゴンを使用）
+                if (feature.geometry.coordinates[0] && feature.geometry.coordinates[0][0]) {
+                  const coords = feature.geometry.coordinates[0][0]
+                  featureLng = coords.reduce((sum, coord) => sum + coord[0], 0) / coords.length
+                  featureLat = coords.reduce((sum, coord) => sum + coord[1], 0) / coords.length
+                }
+              }
+
+            //   マッチ判定
+              if (isInside || (featureLat && featureLng)) {
+                const distance =
+                  featureLat && featureLng
+                    ? Math.sqrt(Math.pow(lat - featureLat, 2) + Math.pow(lng - featureLng, 2))
+                    : 0
+
+                if (isInside || distance < minDistance) {
+                  minDistance = distance
+                  bestMatch = { feature, type }
+                  console.log(`マッチした地形 (${type}):`, feature.properties)
+                }
+              }
+            }
+          })
         }
+      } catch (error) {
+        console.log(`URL ${url} でエラー:`, error)
       }
     }
 
-    if (bestMatch?.feature?.properties) {
-      const props = bestMatch.feature.properties;
-      if (window.__DEBUG) console.log("全プロパティ:", props);
+    if (bestMatch && bestMatch.feature.properties) {
+      const props = bestMatch.feature.properties
+      console.log("全プロパティ:", props)
 
+      // GSIの地形分類データで使用される可能性のあるプロパティ名
       const code =
         props.LandformClassification ||
         props.landform_classification ||
-        props.code || props.type || props.class || props.classification ||
-        props.landform || props.地形分類 || props.分類コード || props.CODE || props.TYPE || props.CLASS;
+        props.code ||
+        props.type ||
+        props.class ||
+        props.classification ||
+        props.landform ||
+        props.地形分類 ||
+        props.分類コード ||
+        props.CODE ||
+        props.TYPE ||
+        props.CLASS
 
-      if (window.__DEBUG) console.log("取得したコード:", code, "データタイプ:", bestMatch.type);
+      console.log("取得したコード:", code)
+      console.log("データタイプ:", bestMatch.type)
 
+      // 地形名への変換
       if (code) {
-        const terrainName = getLandformName(code);
-        if (window.__DEBUG) console.log("変換後の地形名:", terrainName);
-        return terrainName;
+        const terrainName = getLandformName(code)
+        console.log("変換後の地形名:", terrainName)
+        return terrainName
       } else {
-        if (window.__DEBUG) console.log("地形分類コード見つからず:", Object.keys(props));
-        return `地形データあり（${bestMatch.type === "natural" ? "自然地形" : "人工地形"}）`;
+        // プロパティが見つからない場合、全プロパティを表示
+        console.log("地形分類コードが見つかりません。利用可能なプロパティ:", Object.keys(props))
+        return `地形データあり（${bestMatch.type === "natural" ? "自然地形" : "人工地形"}）- プロパティ: ${Object.keys(props).join(", ")}`
       }
     } else {
-      if (window.__DEBUG) console.log("該当する地形分類が見つかりませんでした");
-      return "地形分類データなし";
+      console.log("該当する地形分類が見つかりませんでした")
+      return "地形分類データなし"
     }
   } catch (error) {
-    console.error("地形取得エラー:", error);
-    return "データ取得エラー";
+    console.error("API呼び出しエラー:", error)
+    return "データ取得エラー"
   }
 }
-
 
 // ポリゴン内判定関数(点がポリゴン内にあるかどうか）
 function isPointInPolygon(point, polygon) { // pointは判定したい点の座標
