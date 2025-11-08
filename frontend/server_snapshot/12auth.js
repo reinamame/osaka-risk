@@ -1,19 +1,8 @@
 // 開発(ローカル)だけ127.0.0.1、その他は同一オリジンの /api
-// const isLocal = typeof window !== 'undefined' &&
-  // ['localhost', '127.0.0.1'].includes(window.location.hostname);
-// 
-// export const API_BASE = isLocal ? 'https://127.0.0.1:8000' : '/api';
+const isLocal = typeof window !== 'undefined' &&
+  ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
-// 12auth.js
-const isLocal = typeof window !== "undefined" &&
-  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-
-
-export const API_BASE =
-  (typeof window !== "undefined" && window.__API_BASE) ||
-  (isLocal ? "http://127.0.0.1:8000" : "/api");
-
-console.log("[12auth.js] API_BASE ->", API_BASE);
+export const API_BASE = isLocal ? 'https://127.0.0.1:8000' : '/api';
 
 
 

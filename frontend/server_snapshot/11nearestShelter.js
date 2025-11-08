@@ -1,6 +1,6 @@
 // 11nearestShelter.js（DB版）
-import { map, L } from "../1map_layer.js?v=20251107h";
-import { API_BASE } from "../12auth.js?v=20251107h";
+import { map, L } from "../1map_layer.js";
+import { API_BASE } from "../12auth.js";
 
 
 let shelterMarker = null;  // 最寄り1件を地図に出す用

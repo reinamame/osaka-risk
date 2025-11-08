@@ -1,4 +1,7 @@
 # app_API.py（順序修正版）
+from fastapi.responses import RedirectResponse
+
+
 import os
 from fastapi import FastAPI, Query, Depends, Body, Request, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -65,11 +68,15 @@ app = FastAPI(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOW_ORIGINS,
-    allow_credentials=False,
+    allow_origins=["https://osaka-georisk.com"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse("/docs")
 
 Base.metadata.create_all(bind=engine)
 
