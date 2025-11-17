@@ -60,4 +60,13 @@ export function showLocationInfo({
       <p><strong>🏠 最寄避難所:</strong>${nearestShelter}</p>
     </div>
   `;
+
+  // ★ ボタンにページ遷移を設定
+  const detailBtn = document.getElementById("terrainDetailBtn");
+  if (detailBtn && terrainType && terrainType !== "地形分類データなし" && terrainType !== "データ取得エラー") {
+    detailBtn.addEventListener("click", () => {
+      const q = encodeURIComponent(terrainType);
+      window.location.href = `/terrain.html?terrain=${q}`;
+    });
+  }
 }

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>地形の詳しい情報</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css"><!-- 既存のCSSがあれば -->
+</head>
+<body>
+  <header>
+    <a href="/" style="text-decoration:none;">← 地図に戻る</a>
+    <h1 id="terrainTitle">地形の詳しい情報</h1>
+    <p id="terrainSubtitle"></p>
+  </header>
+
+  <main>
+    <section>
+      <h2>この地形のポイント</h2>
+      <ul id="terrainPoints"></ul>
+    </section>
+
+    <section>
+      <h2>防災モード</h2>
+      <ul id="terrainBousai"></ul>
+    </section>
+
+    <section>
+      <h2>観光モード</h2>
+      <ul id="terrainTourism"></ul>
+    </section>
+
+    <section>
+      <h2>教育モード（成り立ち）</h2>
+      <ul id="terrainEducation"></ul>
+    </section>
+  </main>
+
+  <script type="module" src="../JS/13terrain_detail_db.js"></script>
+</body>
+</html>
