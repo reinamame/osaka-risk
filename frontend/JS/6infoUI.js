@@ -47,6 +47,32 @@ export function showLocationInfo({
     `;
   }
 
+  // ★ この地点で「詳しく見る」ボタンを出してよいか
+  const canShowDetail =
+    terrainType &&
+    !["不明", "地形分類データなし", "データ取得エラー"].includes(terrainType);
+
+  const detailBtnHTML = canShowDetail
+    ? `
+      <button id="terrainDetailBtn"
+        style="
+          margin-top:8px;
+          padding:6px 10px;
+          border-radius:6px;
+          border:none;
+          background:#007bff;
+          color:#fff;
+          cursor:pointer;
+        ">
+        🔍 この地形をくわしく見る
+      </button>
+    `
+    : `
+      <p style="margin-top:8px; font-size:0.85em; color:#666;">
+        ※ この地点の地形詳細ページはまだ登録されていません
+      </p>
+    `;
+
   const bodyEl = document.getElementById("infoBody") || currentLocationInfo;
   bodyEl.innerHTML = `
     <div style="padding:12px; background:#fdfdfd; border:1px solid #ddd; border-radius:8px; font-family: sans-serif; line-height:1.6;">
@@ -55,7 +81,7 @@ export function showLocationInfo({
       <p><strong>🗺️ 地形分類:</strong>${terrainType}</p>
       <p><strong>・地形について:</strong> ${simpleRisk.warnings}</p>
 
-      
+      ${detailBtnHTML}
 
       <p><strong>🏠 最寄避難所:</strong>${nearestShelter}</p>
     </div>

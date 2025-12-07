@@ -1,5 +1,5 @@
 // terrain_detail_page.js
-import { loadTerrainDetailDB, getTerrainDetailByName } from "./13terrain_detail_db";
+import { loadTerrainDetailDB, getTerrainDetailByName } from "./13terrain_detail_db.js";
 
 function fillList(el, items) {
   el.innerHTML = "";
