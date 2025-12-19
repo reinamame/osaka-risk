@@ -5,11 +5,34 @@
 - https://osaka-georisk.com
 - ローカル起動手順は下記参照
 
+## Why
+ハザード情報はあるが“なぜ危険か/どの程度か”が分かりにくい課題に対し、地形を軸に意思決定できる形で提示する。
+
+## Screenshots
+<details>
+  <summary>スクリーンショットを見る（クリックで展開）</summary>
+
+  <img width="2852" height="1668" alt="map" src="https://github.com/user-attachments/assets/320530bc-0f9e-4bb6-8dda-41555df90bc0" />
+  <img width="2056" height="1576" alt="card" src="https://github.com/user-attachments/assets/9248fa11-9237-4577-9993-8d0728194afc" />
+
+</details>
+
 ## Features
-- 現在地 / 任意地点のリスク表示（危険度% + 説明）
+- 現在地 / 任意地点のリスク表示（スコア+ 説明）
 - 国土地理院（GSI）災害タイル（土地条件図 / 洪水 / 津波 / 土石流）の重ね合わせ・切替
 - 最寄り避難所検索（国土数値情報の避難所データを利用）
 - お気に入り（保存 / 一覧 / 削除）※ログイン後
+
+## scoring/explanation
+0–100は確率ではなく比較用の相対スコア。洪水/津波/土砂等の区域データ＋標高/傾斜/河川距離をルールベースで合算し、根拠テキストも返す。
+
+## Data Sources
+国土地理院（GSI）災害タイル（洪水・津波・土砂災害等）
+国土数値情報：避難所データ、地形データ
+
+## Disclaimer
+本アプリは意思決定支援を目的としたもので、最終的な判断は自治体等の公的情報をご確認ください。
+
 
 ## Tech Stack
 - Frontend: HTML / JavaScript / Leaflet
